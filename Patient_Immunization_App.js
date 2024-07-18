@@ -26,10 +26,10 @@ var fields = ['PharmacyLocation','FacName','PharmID','PatientName','PatBirthDate
 var query2Fields = ['PharmacyLocation','FacName','ActivePatientCount'];
 var query2GroupBy = ['PharmacyLocation','FacName','ActivePatientCount'];
 var groupby = ['PharmacyLocation','FacName','PharmID','PatientName','PatBirthDate'];
-var query = `/data/v1/${datasets[0]}?fields=${fields.join()}&groupby=${groupby.join()}`;
+// var query = `/data/v1/${datasets[0]}?fields=${fields.join()}&groupby=${groupby.join()}`;
 var query2 = `data/v1/${datasets[1]}`;
 //var query2 = `/data/v1/${datasets[1]}?fields=${query2Fields.join()}&groupby=${query2GroupBy.join()}`;
-domo.get(query).then(handleResult); /*ORIGINAL CODE*/
+domo.get(query2).then(handleResult); /*ORIGINAL CODE*/
 /*
 Promise.all([
 // domo.get(`data/v1/${datasets[0]}`), 
@@ -51,9 +51,23 @@ let uniqueFacNames = data.map((item) =>{
  );
 let unique = [...new Set(fac)];
 
-console.log("Unique", JSON.stringify(unique));
+//console.log("Unique", JSON.stringify(unique));
 
-
+/*
+ var sheets = unique.forEach((element) => {
+    console.log("Element",element);
+    console.log("Element Type",typeof(element));
+    return {
+      title:element,
+      key:"first",
+      rows:20,
+      columns:20,
+      data:[
+       data
+      ]
+  }
+});
+*/ 
  /*Create Dynamic Sheets*/
  
  var sheets = unique.map((item) =>{
