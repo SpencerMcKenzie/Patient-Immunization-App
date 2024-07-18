@@ -8,12 +8,16 @@
 var domo = window.domo; // For more on domo.js: https://developer.domo.com/docs/dev-studio-guides/domo-js#domo.get
 var datasets = window.datasets;
 var sheetDef = [];
+let uniqueFacNames = [];
+var sheetValues = [];
+var sheets = [];
+//let desired_output = [];
 //let facNameFirst30 = [];
 
 //Step 1. Select your dataset(s) from the button in the bottom left corner
 
 
-console.log("Before GET");
+//console.log("Before GET");
 //Step 2. Query your dataset(s): https://developer.domo.com/docs/dev-studio-references/data-api
 var fields = ['PharmacyLocation','FacName','PharmID','PatientName','PatBirthDate'];
 var groupby = ['PharmacyLocation','FacName','PharmID','PatientName','PatBirthDate'];
@@ -24,16 +28,94 @@ domo.get(query).then(handleResult);
 
 //Step 3. Do something with the data from the query result
 function handleResult(data){
-  console && console.log(data);
+ //  console && console.log(data);
 
+
+  function onlyUnique(value, index, array) {
+  return array.indexOf(value) === index;
+}
   
  let facNameFirst30 = data.map((item) =>{
-    return item.FacName.substring(0,3)
+    return item.FacName.substring(0,30)
  }
  );
- var sheets = data.map((item) =>{
+ // console.log("Unique ",(Object.values(facNameFirst30).filter(onlyUnique)));
+/*Put Unique FacNames into uniqueFacNames */
+  var uniqueFacNames = data.map((item) =>{
+   return (item.FacName);
+ }
+ );
+ var uniqueFacNames = Object.values(uniqueFacNames).filter(onlyUnique);
+
+ //console.log("UniquesName ",uniqueFacNames);
+ //console.log("Data Type ",typeof(data));
+
+// uniqueFacNames.forEach((element) => console.log("Element",element));
+  
+  /*FOR EACH Create Dynamic Sheets*/
+ 
+ /*
+ var sheets = uniqueFacNames.forEach((element) =>{
+    
+     return {
+      title:element,
+      key:"first",
+      rows:20,
+      columns:20,
+      data:[
+       data
+      ]
+  }
+    
+ }
+ );
+ console.log ("Sheets ",sheets)
+ */
+
+
+
+/*Dynamic Sheets Example */
+/*
+let desired_output = (uniqueFacNames) => {
+    let unique_values = uniqueFacNames
+        data.map((item) => item.FacName)
+        .filter(
+            (value, index, current_value) => current_value.indexOf(value) === index
+        );
+    return unique_values;
+    
+};
+*/
+/*Dynamic Sheets Example */
+let desired_output = (uniqueFacNames) => {
+    let unique_values = uniqueFacNames
+        data.map((item) => item.FacName)
+        .filter(
+            (value, index, current_value) => current_value.indexOf(value) === index
+        );
+    return unique_values;
+    
+}; 
+//console.log("Example",(desired_output(uniqueFacNames)));
+console.log("desired_output type", typeof(desired_output(uniqueFacNames)));
+ 
+ var sheetValuesPush = desired_output(uniqueFacNames).forEach((element) =>{
+    //console.log("ForEach ",element.substring(0,30));
+    sheetValues.push(element);
+    
+    
+ },
+  );
+ console.log("sheetValues ",sheetValues);
+
+
+
+ /*Create Dynamic Sheets*/
+ 
+ var sheets = sheetValues.map((item) =>{
+    
     return {
-      title:item.FacName.substring(0,3),
+      title:item,
       key:"first",
       rows:20,
       columns:20,
@@ -45,7 +127,6 @@ function handleResult(data){
  }
  );
  
- console.log("Map FacName: ",facNameFirst30);
  /*
   var sheets = [
     {
@@ -61,7 +142,7 @@ function handleResult(data){
  
 ];
 */
- console.log("Sheets Data: ", sheets);
+// console.log("Sheets Data: ", sheets);
 //Build Tabulator
 var table = new Tabulator("#example-table", {
     height:"311px",
