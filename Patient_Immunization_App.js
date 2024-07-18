@@ -8,6 +8,7 @@
 var domo = window.domo; // For more on domo.js: https://developer.domo.com/docs/dev-studio-guides/domo-js#domo.get
 var datasets = window.datasets;
 var sheetDef = [];
+//let facNameFirst30 = [];
 
 //Step 1. Select your dataset(s) from the button in the bottom left corner
 
@@ -25,7 +26,28 @@ domo.get(query).then(handleResult);
 function handleResult(data){
   console && console.log(data);
 
-  //Build Tabulator
+  
+ let facNameFirst30 = data.map((item) =>{
+    return item.FacName.substring(0,3)
+ }
+ );
+ console.log("Map FacName: ",facNameFirst30);
+ 
+  var sheets = [
+    {
+      title:facNameFirst30,
+      key:"first",
+      rows:20,
+      columns:20,
+      data:[
+       data
+      ]
+  },
+ 
+ 
+];
+ console.log("Sheets Data: ", sheets);
+//Build Tabulator
 var table = new Tabulator("#example-table", {
     height:"311px",
 
@@ -38,8 +60,7 @@ var table = new Tabulator("#example-table", {
 
     rowHeader:{field:"_id", hozAlign:"center", headerSort:false, frozen:true},
 
-    editorEmptyValue:undefined,
-
+    editorEmptyValue:undefined, //ensure empty values are set to undefined so they arent included in spreadsheet output data
 });
 }
 
