@@ -25,37 +25,20 @@ domo.get(query).then(handleResult);
 function handleResult(data){
   console && console.log(data);
 
-  var table = new Tabulator("#example-table", {
+  //Build Tabulator
+var table = new Tabulator("#example-table", {
     height:"311px",
 
     spreadsheet:true,
     spreadsheetRows:10,
     spreadsheetColumns:10,
     spreadsheetColumnDefinition:{editor:"input"},
-   // spreadsheetSheets:sheets,
-   spreadsheetSheets:sheetDef,
+    spreadsheetSheets:sheets,
     spreadsheetSheetTabs:true,
-   //spreadsheetSheetTabsElement:"#table-tabs",
-     /*
-     spreadsheetSheets:[
-        {
-            title:"Sales Info",
-            key:"info",
-            columns:20,
-            rows:20,
-            data:[
-                [9937,	"",	"",	7749,	9816,	4355,	8279,	"",	""],
-                [2380,	"",	6977,	8896,	4012,	3803,	5408,	3415,	3056],
-                [9180,	"",	39,	9445,	3917,	"",	18,	5239,	2516],
-            ]
-        },
-        
-    ],
-*/
 
     rowHeader:{field:"_id", hozAlign:"center", headerSort:false, frozen:true},
 
-    editorEmptyValue:undefined, //ensure empty values are set to undefined so they arent included in spreadsheet output data
+    editorEmptyValue:undefined,
 
 });
 }
