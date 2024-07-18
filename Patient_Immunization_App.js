@@ -13,6 +13,7 @@ var sheetValues = [];
 var sheets = [];
 var sheetData = [];
 var fac =[];
+const facSet = new Set();
 //let desired_output = [];
 //let facNameFirst30 = [];
 
@@ -45,18 +46,21 @@ function handleResult(data){
  // console && console.log("query2 Data", data);
 
 let uniqueFacNames = data.map((item) =>{
-    fac.push(item.FacName);
+    //fac.push(item.FacName);
     //return item.FacName
+    facSet.add(item.FacName);
+    
  }
  );
-let unique = [...new Set(fac)];
+ console.log("FacSet ",facSet);
+//let unique = [...new Set(fac)];
 
 //console.log("Unique", JSON.stringify(unique));
 
 /*
- var sheets = unique.forEach((element) => {
-    console.log("Element",element);
-    console.log("Element Type",typeof(element));
+ var sheets = facSet.forEach((element) => {
+    //console.log("Element",element);
+    //console.log("Element Type",typeof(element));
     return {
       title:element,
       key:"first",
@@ -67,18 +71,22 @@ let unique = [...new Set(fac)];
       ]
   }
 });
-*/ 
+*/
  /*Create Dynamic Sheets*/
+ //[...facSet].reduce(...)
+ const facSetArray = [...facSet];
+ console.log("facSetArray Len ",facSetArray.length);
  
- var sheets = unique.map((item) =>{
+ var sheets = facSetArray.map((item) =>{
+    console.log("sheet Facs ",item);
     
-    return {
+    return{
       title:item,
       key:"first",
       rows:20,
-      columns:20,
+      columns:5,
       data:[
-       data
+       
       ]
   }
     
