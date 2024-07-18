@@ -26,12 +26,13 @@ var query2Fields = ['PharmacyLocation','FacName','ActivePatientCount'];
 var query2GroupBy = ['PharmacyLocation','FacName','ActivePatientCount'];
 var groupby = ['PharmacyLocation','FacName','PharmID','PatientName','PatBirthDate'];
 var query = `/data/v1/${datasets[0]}?fields=${fields.join()}&groupby=${groupby.join()}`;
-
+var query2 = `data/v1/${datasets[0]}`;
 //var query2 = `/data/v1/${datasets[1]}?fields=${query2Fields.join()}&groupby=${query2GroupBy.join()}`;
 //domo.get(query).then(handleResult); /*ORIGINAL CODE*/
 Promise.all([
-domo.get(`data/v1/${datasets[0]}`), 
+// domo.get(`data/v1/${datasets[0]}`), 
 domo.get(query, {format: 'array-of-arrays'}),
+domo.get(query2, {format: 'array-of-arrays'}),
   
 ]).then(handleResult);
 
@@ -45,59 +46,13 @@ function handleResult(data){
   function onlyUnique(value, index, array) {
   return array.indexOf(value) === index;
 }
-  /*
- let facNameFirst30 = data.map((item) =>{
-    return item.FacName.substring(0,30)
- }
- );
- */
- // console.log("Unique ",(Object.values(facNameFirst30).filter(onlyUnique)));
-/*Put Unique FacNames into uniqueFacNames */
+  
   var uniqueFacNames = data.map((item) =>{
    return (item.FacName);
  }
  );
  var uniqueFacNames = Object.values(uniqueFacNames).filter(onlyUnique);
 
- //console.log("UniquesName ",uniqueFacNames);
- //console.log("Data Type ",typeof(data));
-
-// uniqueFacNames.forEach((element) => console.log("Element",element));
-  
-  /*FOR EACH Create Dynamic Sheets*/
- 
- /*
- var sheets = uniqueFacNames.forEach((element) =>{
-    
-     return {
-      title:element,
-      key:"first",
-      rows:20,
-      columns:20,
-      data:[
-       data
-      ]
-  }
-    
- }
- );
- console.log ("Sheets ",sheets)
- */
-
-
-
-/*Dynamic Sheets Example */
-/*
-let desired_output = (uniqueFacNames) => {
-    let unique_values = uniqueFacNames
-        data.map((item) => item.FacName)
-        .filter(
-            (value, index, current_value) => current_value.indexOf(value) === index
-        );
-    return unique_values;
-    
-};
-*/
 /*Dynamic Sheets Example */
 let desired_output = (uniqueFacNames) => {
     let unique_values = uniqueFacNames
