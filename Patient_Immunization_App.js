@@ -6,7 +6,7 @@
  
 //Available globals
 var domo = window.domo; // For more on domo.js: https://developer.domo.com/docs/dev-studio-guides/domo-js#domo.get
-var datasets = window.datasets;
+// var datasets = window.datasets;
 var sheetDef = [];
 let uniqueFacNames = [];
 var sheetValues = [];
@@ -20,10 +20,20 @@ var sheetData = [];
 
 //console.log("Before GET");
 //Step 2. Query your dataset(s): https://developer.domo.com/docs/dev-studio-references/data-api
+// Form the data queries: https://developer.domo.com/docs/dev-studio-guides/data-queries
 var fields = ['PharmacyLocation','FacName','PharmID','PatientName','PatBirthDate'];
+var query2Fields = ['PharmacyLocation','FacName','ActivePatientCount'];
+var query2GroupBy = ['PharmacyLocation','FacName','ActivePatientCount'];
 var groupby = ['PharmacyLocation','FacName','PharmID','PatientName','PatBirthDate'];
 var query = `/data/v1/${datasets[0]}?fields=${fields.join()}&groupby=${groupby.join()}`;
-domo.get(query).then(handleResult);
+
+//var query2 = `/data/v1/${datasets[1]}?fields=${query2Fields.join()}&groupby=${query2GroupBy.join()}`;
+//domo.get(query).then(handleResult); /*ORIGINAL CODE*/
+Promise.all([
+domo.get(`data/v1/${datasets[0]}`), 
+domo.get(query, {format: 'array-of-arrays'}),
+  
+]).then(handleResult);
 
 
 
@@ -52,7 +62,42 @@ function handleResult(data){
  //console.log("UniquesName ",uniqueFacNames);
  //console.log("Data Type ",typeof(data));
 
+// uniqueFacNames.forEach((element) => console.log("Element",element));
+  
+  /*FOR EACH Create Dynamic Sheets*/
+ 
+ /*
+ var sheets = uniqueFacNames.forEach((element) =>{
+    
+     return {
+      title:element,
+      key:"first",
+      rows:20,
+      columns:20,
+      data:[
+       data
+      ]
+  }
+    
+ }
+ );
+ console.log ("Sheets ",sheets)
+ */
 
+
+
+/*Dynamic Sheets Example */
+/*
+let desired_output = (uniqueFacNames) => {
+    let unique_values = uniqueFacNames
+        data.map((item) => item.FacName)
+        .filter(
+            (value, index, current_value) => current_value.indexOf(value) === index
+        );
+    return unique_values;
+    
+};
+*/
 /*Dynamic Sheets Example */
 let desired_output = (uniqueFacNames) => {
     let unique_values = uniqueFacNames
@@ -73,6 +118,9 @@ console.log("desired_output type", typeof(desired_output(uniqueFacNames)));
     
  },
   );
+ console.log("sheetValues ",sheetValues);
+
+
 
  /*Create Dynamic Sheets*/
  
