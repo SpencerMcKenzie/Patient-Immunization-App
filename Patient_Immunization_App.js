@@ -31,8 +31,22 @@ function handleResult(data){
     return item.FacName.substring(0,3)
  }
  );
- console.log("Map FacName: ",facNameFirst30);
+ var sheets = data.map((item) =>{
+    return {
+      title:item.FacName.substring(0,3),
+      key:"first",
+      rows:20,
+      columns:20,
+      data:[
+       data
+      ]
+  }
+    
+ }
+ );
  
+ console.log("Map FacName: ",facNameFirst30);
+ /*
   var sheets = [
     {
       title:facNameFirst30,
@@ -40,12 +54,13 @@ function handleResult(data){
       rows:20,
       columns:20,
       data:[
-       data
+       facNameFirst30
       ]
   },
  
  
 ];
+*/
  console.log("Sheets Data: ", sheets);
 //Build Tabulator
 var table = new Tabulator("#example-table", {
