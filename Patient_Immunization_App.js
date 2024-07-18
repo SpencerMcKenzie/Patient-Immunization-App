@@ -26,63 +26,38 @@ var query2Fields = ['PharmacyLocation','FacName','ActivePatientCount'];
 var query2GroupBy = ['PharmacyLocation','FacName','ActivePatientCount'];
 var groupby = ['PharmacyLocation','FacName','PharmID','PatientName','PatBirthDate'];
 var query = `/data/v1/${datasets[0]}?fields=${fields.join()}&groupby=${groupby.join()}`;
-var query2 = `data/v1/${datasets[0]}`;
+var query2 = `data/v1/${datasets[1]}`;
 //var query2 = `/data/v1/${datasets[1]}?fields=${query2Fields.join()}&groupby=${query2GroupBy.join()}`;
-//domo.get(query).then(handleResult); /*ORIGINAL CODE*/
+domo.get(query2).then(handleResult); /*ORIGINAL CODE*/
+/*
 Promise.all([
 // domo.get(`data/v1/${datasets[0]}`), 
 domo.get(query, {format: 'array-of-arrays'}),
-domo.get(query2, {format: 'array-of-arrays'}),
+
   
-]).then(handleResult);
+]).then(showValues);
+*/
+// domo.get(query2, {format: 'array-of-arrays'}).then(handleResult),
 
 
 
 //Step 3. Do something with the data from the query result
 function handleResult(data){
- //  console && console.log(data);
+ console && console.log("query2 Data", data);
 
 
-  function onlyUnique(value, index, array) {
-  return array.indexOf(value) === index;
-}
   
-  var uniqueFacNames = data.map((item) =>{
-   return (item.FacName);
- }
- );
- var uniqueFacNames = Object.values(uniqueFacNames).filter(onlyUnique);
-
-/*Dynamic Sheets Example */
-let desired_output = (uniqueFacNames) => {
-    let unique_values = uniqueFacNames
-        data.map((item) => item.FacName)
-        .filter(
-            (value, index, current_value) => current_value.indexOf(value) === index
-        );
-    return unique_values;
-    
-}; 
-//console.log("Example",(desired_output(uniqueFacNames)));
-console.log("desired_output type", typeof(desired_output(uniqueFacNames)));
  
- var sheetValuesPush = desired_output(uniqueFacNames).forEach((element) =>{
-    //console.log("ForEach ",element.substring(0,30));
-    sheetValues.push(element);
-    
-    
- },
-  );
- console.log("sheetValues ",sheetValues);
+ 
 
 
 
  /*Create Dynamic Sheets*/
  
- var sheets = sheetValues.map((item) =>{
+ var sheets = data.map((item) =>{
     
     return {
-      title:item,
+      title:item.FacName,
       key:"first",
       rows:20,
       columns:20,
