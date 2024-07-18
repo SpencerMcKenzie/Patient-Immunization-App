@@ -12,6 +12,7 @@ let uniqueFacNames = [];
 var sheetValues = [];
 var sheets = [];
 var sheetData = [];
+var fac =[];
 //let desired_output = [];
 //let facNameFirst30 = [];
 
@@ -28,7 +29,7 @@ var groupby = ['PharmacyLocation','FacName','PharmID','PatientName','PatBirthDat
 var query = `/data/v1/${datasets[0]}?fields=${fields.join()}&groupby=${groupby.join()}`;
 var query2 = `data/v1/${datasets[1]}`;
 //var query2 = `/data/v1/${datasets[1]}?fields=${query2Fields.join()}&groupby=${query2GroupBy.join()}`;
-domo.get(query2).then(handleResult); /*ORIGINAL CODE*/
+domo.get(query).then(handleResult); /*ORIGINAL CODE*/
 /*
 Promise.all([
 // domo.get(`data/v1/${datasets[0]}`), 
@@ -39,25 +40,26 @@ domo.get(query, {format: 'array-of-arrays'}),
 */
 // domo.get(query2, {format: 'array-of-arrays'}).then(handleResult),
 
-
-
 //Step 3. Do something with the data from the query result
 function handleResult(data){
- console && console.log("query2 Data", data);
+ // console && console.log("query2 Data", data);
 
+let uniqueFacNames = data.map((item) =>{
+    fac.push(item.FacName);
+    //return item.FacName
+ }
+ );
+let unique = [...new Set(fac)];
 
-  
- 
- 
-
+console.log("Unique", JSON.stringify(unique));
 
 
  /*Create Dynamic Sheets*/
  
- var sheets = data.map((item) =>{
+ var sheets = unique.map((item) =>{
     
     return {
-      title:item.FacName,
+      title:item,
       key:"first",
       rows:20,
       columns:20,
