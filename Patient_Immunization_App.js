@@ -11,6 +11,7 @@ var sheetDef = [];
 let uniqueFacNames = [];
 var sheetValues = [];
 var sheets = [];
+var sheetData = [];
 //let desired_output = [];
 //let facNameFirst30 = [];
 
@@ -34,11 +35,12 @@ function handleResult(data){
   function onlyUnique(value, index, array) {
   return array.indexOf(value) === index;
 }
-  
+  /*
  let facNameFirst30 = data.map((item) =>{
     return item.FacName.substring(0,30)
  }
  );
+ */
  // console.log("Unique ",(Object.values(facNameFirst30).filter(onlyUnique)));
 /*Put Unique FacNames into uniqueFacNames */
   var uniqueFacNames = data.map((item) =>{
@@ -50,42 +52,7 @@ function handleResult(data){
  //console.log("UniquesName ",uniqueFacNames);
  //console.log("Data Type ",typeof(data));
 
-// uniqueFacNames.forEach((element) => console.log("Element",element));
-  
-  /*FOR EACH Create Dynamic Sheets*/
- 
- /*
- var sheets = uniqueFacNames.forEach((element) =>{
-    
-     return {
-      title:element,
-      key:"first",
-      rows:20,
-      columns:20,
-      data:[
-       data
-      ]
-  }
-    
- }
- );
- console.log ("Sheets ",sheets)
- */
 
-
-
-/*Dynamic Sheets Example */
-/*
-let desired_output = (uniqueFacNames) => {
-    let unique_values = uniqueFacNames
-        data.map((item) => item.FacName)
-        .filter(
-            (value, index, current_value) => current_value.indexOf(value) === index
-        );
-    return unique_values;
-    
-};
-*/
 /*Dynamic Sheets Example */
 let desired_output = (uniqueFacNames) => {
     let unique_values = uniqueFacNames
@@ -106,9 +73,6 @@ console.log("desired_output type", typeof(desired_output(uniqueFacNames)));
     
  },
   );
- console.log("sheetValues ",sheetValues);
-
-
 
  /*Create Dynamic Sheets*/
  
@@ -155,6 +119,10 @@ var table = new Tabulator("#example-table", {
     spreadsheetSheetTabs:true,
 
     rowHeader:{field:"_id", hozAlign:"center", headerSort:false, frozen:true},
+    columns:[
+        {title:"PatientName", field:"PatientName", width:200, editor:"input"},
+       
+    ],
 
     editorEmptyValue:undefined, //ensure empty values are set to undefined so they arent included in spreadsheet output data
 });
