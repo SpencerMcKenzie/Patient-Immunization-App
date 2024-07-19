@@ -14,6 +14,9 @@ var sheets = [];
 var sheetData = [];
 var fac =[];
 const facSet = new Set();
+const columnNames = new Set();
+var dataValues =[];
+var dataResult = [];
 //let desired_output = [];
 //let facNameFirst30 = [];
 
@@ -44,15 +47,53 @@ domo.get(query, {format: 'array-of-arrays'}),
 //Step 3. Do something with the data from the query result
 function handleResult(data){
  // console && console.log("query2 Data", data);
+//console.log("dataValues",JSON.stringify(data));
+for (i = 0; i < data.length; i++) {
+  //console.log(data[i]);
+  dataResult.push([i, data[i]]);
+/*
+var dataTable = new google.visualization.DataTable();
+dataTable.addColumn('PharmacyLocation', 'FacName');
+dataTable.addColumn('facName', 'PharmID');
+dataTable.addColumn('PatientName','PatBirthDate');
+dataTable.addRows(dataResult);
+cosole.log(dataTable);
+*/
+} 
+for (i = 0; i < dataResult.length; i++) {
+ //console.log(dataResult[i]);
+  
+
+} 
+console.log("Objectvalues: ",Object.values(dataResult)[0][1].PharmacyLocation);
+/*
+for(var i in data)
+    dataResult.push([i, data[i]]);
+var dataTable = new google.visualization.DataTable();
+dataTable.addColumn('PharmacyLocation', 'FacName');
+dataTable.addColumn('facName', 'PharmID');
+dataTable.addColumn('PatientName','PatBirthDate');
+dataTable.addRows(dataResult);
+cosole.log(dataTable);
+*/
 
 let uniqueFacNames = data.map((item) =>{
     //fac.push(item.FacName);
     //return item.FacName
     facSet.add(item.FacName);
+    columnNames.add(Object.keys(item)); 
+     // Get the keys
+let keys = Object.keys(item);
+
+
+
+// Printing keys
+//console.log("Keys",keys[0]);
+    // console.log("item ",item);
     
  }
  );
- console.log("FacSet ",facSet);
+ //console.log("FacSet ",facSet);
 //let unique = [...new Set(fac)];
 
 //console.log("Unique", JSON.stringify(unique));
@@ -75,10 +116,13 @@ let uniqueFacNames = data.map((item) =>{
  /*Create Dynamic Sheets*/
  //[...facSet].reduce(...)
  const facSetArray = [...facSet];
- console.log("facSetArray Len ",facSetArray.length);
+ const columnNamesArray = [...columnNames];
+ //console.log("facSetArray Len ",facSetArray.length);
+
+
  
  var sheets = facSetArray.map((item) =>{
-    console.log("sheet Facs ",item);
+    //console.log("sheet Facs ",item);
     
     return{
       title:item,
@@ -86,12 +130,29 @@ let uniqueFacNames = data.map((item) =>{
       rows:20,
       columns:5,
       data:[
-       
+       //Object.values(dataResult[0])
+       [9937,	"",	"",	7749,	9816,	4355,	8279,	"",	""],
+        [2380,	"",	6977,	8896,	4012,	3803,	5408,	3415,	3056],
+        [9180,	"",	39,	9445,	3917,	"",	18,	5239,	2516],
+        [1924,	8734,	1819,	1838,	2330,	7921,	9219,	"",	3537],
       ]
   }
     
  }
  );
+
+ var sheetColumns = columnNamesArray.map((item) =>{
+    //console.log("sheet Facs ",item);
+    
+    return //console.log("sheetColumns ",Object.keys(item));
+     
+  
+    
+ }
+ );
+
+ //console.log("columnNamesArray  Len", columnNamesArray.length);
+ //console.log("facSetArray len ",facSetArray.length);
  
  /*
   var sheets = [
@@ -105,30 +166,53 @@ let uniqueFacNames = data.map((item) =>{
       ]
   },
  
- 
+ co
 ];
 */
-// console.log("Sheets Data: ", sheets);
+//console.log("Data Columns: ", columnNames.size);
 //Build Tabulator
 var table = new Tabulator("#example-table", {
     height:"311px",
-
+   downloadRowRange:"selected",
     spreadsheet:true,
     spreadsheetRows:10,
-    spreadsheetColumns:10,
-    spreadsheetColumnDefinition:{editor:"input"},
+    spreadsheetColumns:1,
+    spreadsheetColumnDefinition:{title:data[1], field:data[1], width:200, editor:"input"},
     spreadsheetSheets:sheets,
     spreadsheetSheetTabs:true,
 
     rowHeader:{field:"_id", hozAlign:"center", headerSort:false, frozen:true},
     columns:[
-        {title:"PatientName", field:"PatientName", width:200, editor:"input"},
-       
+        {title:"Name", field:"PharmacyLocation", width:200, editor:"input"},
+        {title:"Progress", field:"progress", width:100, hozAlign:"right", sorter:"number", editor:"input"},
+        {title:"Gender", field:"gender", editor:"input"},
+        {title:"Rating", field:"rating", hozAlign:"center", width:80, editor:"input"},
+        {title:"Favourite Color", field:"col", editor:"input"},
+        {title:"Date Of Birth", field:"dob", hozAlign:"center", sorter:"date", editor:"input"},
+        {title:"Driver", field:"car", hozAlign:"center", editor:"input"},
     ],
+    
 
     editorEmptyValue:undefined, //ensure empty values are set to undefined so they arent included in spreadsheet output data
+
 });
+
+
+
+
+//trigger download of data.xlsx file
+document.getElementById("download-xlsx").addEventListener("click", function(){
+    table.download("xlsx", "data.xlsx", {sheetName:"My Data"});
+});
+
+
+// table.download("xlsx", "data.xlsx", {}); //download table data as a XLSX formatted file with a file name of data.xlsx
+
+
+
+
 }
+
 
 /*ORIGINAL DOMO CODE */
 
