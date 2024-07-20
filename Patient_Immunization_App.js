@@ -17,6 +17,9 @@ const facSet = new Set();
 const columnNames = new Set();
 var dataValues =[];
 var dataResult = [];
+var parseData = [];
+let patientName = new Set();
+var dom = document.getElementById("example-table");
 //let desired_output = [];
 //let facNameFirst30 = [];
 
@@ -47,6 +50,8 @@ domo.get(query, {format: 'array-of-arrays'}),
 //Step 3. Do something with the data from the query result
 function handleResult(data){
  // console && console.log("query2 Data", data);
+ //console.log("dataStringify, ",JSON.stringify(data));
+ //console.log("dataParse ",JSON.parse(JSON.stringify(data)));
 //console.log("dataValues",JSON.stringify(data));
 for (i = 0; i < data.length; i++) {
   //console.log(data[i]);
@@ -60,11 +65,7 @@ dataTable.addRows(dataResult);
 cosole.log(dataTable);
 */
 } 
-for (i = 0; i < dataResult.length; i++) {
- //console.log(dataResult[i]);
-  
 
-} 
 console.log("Objectvalues: ",Object.values(dataResult)[0][1].PharmacyLocation);
 /*
 for(var i in data)
@@ -82,18 +83,21 @@ let uniqueFacNames = data.map((item) =>{
     //return item.FacName
     facSet.add(item.FacName);
     columnNames.add(Object.keys(item)); 
+    patientName.add(item.PatientName);
+   
      // Get the keys
 let keys = Object.keys(item);
 
 
 
+//console.log("patients,",patientName.forEach(logSetElements))
 // Printing keys
 //console.log("Keys",keys[0]);
     // console.log("item ",item);
     
  }
  );
- //console.log("FacSet ",facSet);
+ 
 //let unique = [...new Set(fac)];
 
 //console.log("Unique", JSON.stringify(unique));
@@ -118,11 +122,16 @@ let keys = Object.keys(item);
  const facSetArray = [...facSet];
  const columnNamesArray = [...columnNames];
  //console.log("facSetArray Len ",facSetArray.length);
+let patValues = patientName.values();
+console.log("patValues ",patValues);
+console.log(patValues.next().value)
 
-
- 
  var sheets = facSetArray.map((item) =>{
     //console.log("sheet Facs ",item);
+    function display(i, set) {
+    console.log(i);
+}
+
     
     return{
       title:item,
@@ -130,12 +139,21 @@ let keys = Object.keys(item);
       rows:20,
       columns:5,
       data:[
+       
        //Object.values(dataResult[0])
+       //patientName.forEach(logSetElements)
+       
+       [
+       patValues.next().value
+       ]
+       /*
        [9937,	"",	"",	7749,	9816,	4355,	8279,	"",	""],
         [2380,	"",	6977,	8896,	4012,	3803,	5408,	3415,	3056],
         [9180,	"",	39,	9445,	3917,	"",	18,	5239,	2516],
         [1924,	8734,	1819,	1838,	2330,	7921,	9219,	"",	3537],
+      */
       ]
+      
   }
     
  }
@@ -173,7 +191,15 @@ let keys = Object.keys(item);
 //Build Tabulator
 var table = new Tabulator("#example-table", {
     height:"311px",
-   downloadRowRange:"selected",
+     downloadConfig:{
+        columnHeaders:true, //include column headers in downloaded table
+        columnGroups:false, //do not include column groups in column headers for downloaded table
+        rowHeaders:false, //do not include row headers in downloaded table
+        rowGroups:false, //do not include row groups in downloaded table
+        columnCalcs:false, //do not include column calcs in downloaded table
+        dataTree:false, //do not include data tree in downloaded table
+    },
+   //  downloadRowRange:"selected",
     spreadsheet:true,
     spreadsheetRows:10,
     spreadsheetColumns:1,
@@ -183,13 +209,11 @@ var table = new Tabulator("#example-table", {
 
     rowHeader:{field:"_id", hozAlign:"center", headerSort:false, frozen:true},
     columns:[
-        {title:"Name", field:"PharmacyLocation", width:200, editor:"input"},
-        {title:"Progress", field:"progress", width:100, hozAlign:"right", sorter:"number", editor:"input"},
-        {title:"Gender", field:"gender", editor:"input"},
-        {title:"Rating", field:"rating", hozAlign:"center", width:80, editor:"input"},
-        {title:"Favourite Color", field:"col", editor:"input"},
-        {title:"Date Of Birth", field:"dob", hozAlign:"center", sorter:"date", editor:"input"},
-        {title:"Driver", field:"car", hozAlign:"center", editor:"input"},
+        {title:"Pharmacy", field:"PharmacyLocation", width:200, editor:"input"},
+        {title:"Facility", field:"FacName", width:100, hozAlign:"right", sorter:"number", editor:"input"},
+        {title:"Patient", field:"PatientName", editor:"input"},
+        {title:"Birth Date", field:"PatBirthDate", hozAlign:"center", width:80, editor:"input"},
+        
     ],
     
 
@@ -201,8 +225,9 @@ var table = new Tabulator("#example-table", {
 
 
 //trigger download of data.xlsx file
+
 document.getElementById("download-xlsx").addEventListener("click", function(){
-    table.download("xlsx", "data.xlsx", {sheetName:"My Data"});
+  table.download("xlsx", "AllData.xlsx", {sheets:sheets});
 });
 
 
