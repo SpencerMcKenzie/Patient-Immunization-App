@@ -23,6 +23,63 @@ let facilities = new Set();
 var arr = [];
 var dom = document.getElementById("example-table");
 var sheets = [];
+var sampleData = [
+        [1924,	8734,	1819,	1838,	2330,	7921,	9219,	"",	3537],
+        ["",	8665,	5875,	9732,	1926,	"",	9743,	8388,   ""],
+        [7040,	4861,	2988,	5584,	2344,	9749,	8872,	9177,	6246],
+        [6334,	1674,	2967,	"",	9353,	396,	6006,	8572 , ""],
+        [6359,	"",	2580,	5723,	9801,	554,	1044,	5266,	8532],
+        [7278,	6971,	2232,	5720,	5665,	7231,	1165,	"",	168],
+      ];
+var tabulatorSampleData = [
+    {id:1, name:"Billy Bob", age:"12", gender:"male", height:1, col:"red", dob:"", cheese:1},
+    {id:2, name:"Mary May", age:"1", gender:"female", height:2, col:"blue", dob:"14/05/1982", cheese:true},
+    {id:3, name:"Christine Lobowski", age:"42", height:0, col:"green", dob:"22/05/1982", cheese:"true"},
+    {id:4, name:"Brendon Philips", age:"125", gender:"male", height:1, col:"orange", dob:"01/08/1980"},
+    {id:5, name:"Margret Marmajuke", age:"16", gender:"female", height:5, col:"yellow", dob:"31/01/1999"},
+    {id:6, name:"Billy Bob", age:"12", gender:"male", height:1, col:"red", dob:"", cheese:1},
+    {id:7, name:"Mary May", age:"1", gender:"female", height:2, col:"blue", dob:"14/05/1982", cheese:true},
+    {id:8, name:"Christine Lobowski", age:"42", height:0, col:"green", dob:"22/05/1982", cheese:"true"},
+    {id:9, name:"Brendon Philips", age:"125", gender:"male", height:1, col:"orange", dob:"01/08/1980"},
+    {id:10, name:"Margret Marmajuke", age:"16", gender:"female", height:5, col:"yellow", dob:"31/01/1999"},
+];
+
+var object1 = [];
+
+   // Your JSON data
+    const jsonData = {
+      "columns": [
+        {
+          "title": "FacilityTitle",
+          "field": "facilitytitle",
+          "width": 50
+        },
+        {
+          "title": "PatientNameTitle",
+          "field": "patientnametitle",
+          "width": 150
+        },
+        {
+          "title": "PatientDOBTitle",
+          "field": "patientdobtitle",
+          "width": 50,
+          "align": "right"
+        }
+      ],
+      data: [
+        {
+          "facilitytitle": "facility",
+          "patientnametitle": "John Doe",
+          "patientdobtitle": "date"
+        },
+       
+      ]
+      };
+    
+     // console.log("sample Data",sampleData);
+     console.log("tabulatorSampleData",tabulatorSampleData);
+     
+     
 //let desired_output = [];
 //let facNameFirst30 = [];
 
@@ -40,6 +97,8 @@ var groupby = ['PharmacyLocation','FacName','PharmID','PatientName','PatBirthDat
 var query2 = `data/v1/${datasets[1]}`;
 //var query2 = `/data/v1/${datasets[1]}?fields=${query2Fields.join()}&groupby=${query2GroupBy.join()}`;
 domo.get(query2).then(handleResult); /*ORIGINAL CODE*/
+
+
 /*
 Promise.all([
 // domo.get(`data/v1/${datasets[0]}`), 
@@ -52,10 +111,47 @@ domo.get(query, {format: 'array-of-arrays'}),
 
 //Step 3. Do something with the data from the query result
 function handleResult(data){
+ const map1 = new Map();
+
  data.forEach(element => {
-   arr.push(element.FacName)
+   arr.push(element.FacName);
+   object1.push(JSON.stringify(element.FacName));
+   map1.set('facility', element.FacName);
+   map1.set('patient', element.PatientName);
+   map1.set('dob', element.PatBirthDate);
 });
+const map1DataPart = map1.data;
+
+const facilityValue = map1.get('facility','patient');
+console.log("facilityValue",facilityValue);
+
+for (let value of map1.values()) {
+    console.log("Values",value);
+}
+ var sheetValuesArray = data.map(o => new Object({facilitytitle: o.FacName, patientnametitle: o.PatientName, patientdobtitle: o.PatBirthDate}))
+ //console.log("sheetValuesArray",sheetValuesArray);
  
+ const jsonDataArray = data.map(d => (({
+  "status": "success",
+  "data": {
+    "facility": 1,
+    "patient": "John Doe",
+    "dob": "john.doe@example.com"
+  },
+  "message": "User retrieved successfully"
+})));
+    const dataPart = jsonDataArray.data;
+
+// Output the "data" part to the console
+console.log("dataPart",dataPart);
+
+
+
+// Accessing the "data" part
+
+
+
+ //console.log(arr);
  // console && console.log("query2 Data", data);
  //console.log("dataStringify, ",JSON.stringify(data));
  //console.log("dataParse ",JSON.parse(JSON.stringify(data)));
@@ -136,15 +232,11 @@ let facilitiesValues = facilities.values();
 //console.log(patValues.next().value);
 let outputArray = [];
 
-console.log("arr len", arr.length);
-//console.log("uRemove",removeusingSet(arr));
+
 let unique = [...new Set(data.map(item => item.FacName))];
 //console.log("unique length", unique.length);
 //console.log("unique ", unique);
- let clients = [{pharmacyLocation:"", patientName:"", dob:""}, {pharmacyLocation:"", patientName:"", dob:""}]
-let clientsMapped = data.map(client => ({pharmacyLocation:client.PharmacyLocation, patient:client.PatientName}))
-let yourJson = JSON.stringify(clientsMapped)
-console.log("yourSon ",yourJson);
+
  
  
  
@@ -163,19 +255,24 @@ console.log("yourSon ",yourJson);
   })
    //console.log("uniqueFac Len:",item.length);
   // console.log("uniqueFac",item);
-
+ let clients = [{pharmacyLocation:"", patientName:"", dob:""}, {pharmacyLocation:"", patientName:"", dob:""}]
+let clientsMapped = data.map(client => ({pharmacyLocation:client.PharmacyLocation, patientName:client.PatientName}))
+let yourJson = JSON.stringify(clientsMapped)
+//console.log("yourJSON Type ",sheetValuesArray);
     
     return{
       title:facItem,
       key:facItem,
       rows:5,
-      columns:5,
-      data:[
-        
+      columns:2,
+      data:[]
+        /*
         uniquePats.map((patItem) =>{ 
     //console.log("pats",  JSON.stringify(patItem, 4));
     return JSON.stringify(patItem, 4)
+    
   })
+  */
         /*
         [1924,	8734,	1819,	1838,	2330,	7921,	9219,	"",	3537],
         ["",	8665,	5875,	9732,	1926,	"",	9743,	8388,   ""],
@@ -184,7 +281,7 @@ console.log("yourSon ",yourJson);
         [6359,	"",	2580,	5723,	9801,	554,	1044,	5266,	8532],
         [7278,	6971,	2232,	5720,	5665,	7231,	1165,	"",	168],
       */
-      ]
+      
        /*
        [
        uniquePats.map((item) =>{ 
@@ -200,7 +297,7 @@ console.log("yourSon ",yourJson);
  }
  
  );
- console.log("sheets var", sheets);
+
 
  var sheetColumns = columnNamesArray.map((item) =>{
     //console.log("sheet Facs ",item);
@@ -253,19 +350,18 @@ var table = new Tabulator("#example-table", {
 
     rowHeader:{field:"_id", hozAlign:"center", headerSort:false, frozen:true},
     columns:[
-        {title:"Pharmacy", field:"PharmacyLocation", width:200, editor:"input"},
-        {title:"Facility", field:"FacName", width:100, hozAlign:"right", sorter:"number", editor:"input"},
-        {title:"Patient", field:"PatientName", editor:"input"},
-        {title:"Birth Date", field:"PatBirthDate", hozAlign:"center", width:80, editor:"input"},
+        {title:"name", field:"name", width:200, editor:"input"},
+        {title:"age", field:"age", width:100, hozAlign:"right", editor:"input"},
+        
         
     ],
     
 
-    editorEmptyValue:undefined, //ensure empty values are set to undefined so they arent included in spreadsheet output data
+    //editorEmptyValue:undefined, //ensure empty values are set to undefined so they arent included in spreadsheet output data
 
 });
-table.addRow(Object.assign({}, defaults));
-
+//console.log("data string ",JSON.stringify(data));
+$("#example-table").tabulator("setData", tabulatorSampleData);
 
 
 //trigger download of data.xlsx file
