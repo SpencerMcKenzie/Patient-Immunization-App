@@ -19,7 +19,10 @@ var dataValues =[];
 var dataResult = [];
 var parseData = [];
 let patientName = new Set();
+let facilities = new Set();
+var arr = [];
 var dom = document.getElementById("example-table");
+var sheets = [];
 //let desired_output = [];
 //let facNameFirst30 = [];
 
@@ -49,6 +52,10 @@ domo.get(query, {format: 'array-of-arrays'}),
 
 //Step 3. Do something with the data from the query result
 function handleResult(data){
+ data.forEach(element => {
+   arr.push(element.FacName)
+});
+ 
  // console && console.log("query2 Data", data);
  //console.log("dataStringify, ",JSON.stringify(data));
  //console.log("dataParse ",JSON.parse(JSON.stringify(data)));
@@ -84,6 +91,7 @@ let uniqueFacNames = data.map((item) =>{
     facSet.add(item.FacName);
     columnNames.add(Object.keys(item)); 
     patientName.add(item.PatientName);
+    facilities.add(item.FacName); 
    
      // Get the keys
 let keys = Object.keys(item);
@@ -123,41 +131,76 @@ let keys = Object.keys(item);
  const columnNamesArray = [...columnNames];
  //console.log("facSetArray Len ",facSetArray.length);
 let patValues = patientName.values();
-console.log("patValues ",patValues);
-console.log(patValues.next().value)
+let facilitiesValues = facilities.values();
+//onsole.log("patValues ",patValues);
+//console.log(patValues.next().value);
+let outputArray = [];
 
- var sheets = facSetArray.map((item) =>{
-    //console.log("sheet Facs ",item);
-    function display(i, set) {
-    console.log(i);
-}
+console.log("arr len", arr.length);
+//console.log("uRemove",removeusingSet(arr));
+let unique = [...new Set(data.map(item => item.FacName))];
+//console.log("unique length", unique.length);
+//console.log("unique ", unique);
+ let clients = [{pharmacyLocation:"", patientName:"", dob:""}, {pharmacyLocation:"", patientName:"", dob:""}]
+let clientsMapped = data.map(client => ({pharmacyLocation:client.PharmacyLocation, patient:client.PatientName}))
+let yourJson = JSON.stringify(clientsMapped)
+console.log("yourSon ",yourJson);
+ 
+ 
+ 
+ let sheetValues = [...new Set(data.map(o => ({name: o.FacName, pat: o.PatientName})))];
+ let uniqueFacs = [...new Set(data.map(item => item.FacName))];
+ let uniquePats = [...new Set(data.map(item => item.PatientName))];
+ //console.log("o Name", uniqueFac);
+ 
+ 
+ 
+ 
+ var sheets = uniqueFacs.map((facItem) =>{
+  var pats = uniquePats.map((patItem) =>{ 
+    //console.log("pats",  JSON.stringify(patItem, 4));
+    //return patItem
+  })
+   //console.log("uniqueFac Len:",item.length);
+  // console.log("uniqueFac",item);
 
     
     return{
-      title:item,
-      key:"first",
-      rows:20,
+      title:facItem,
+      key:facItem,
+      rows:5,
       columns:5,
       data:[
-       
-       //Object.values(dataResult[0])
-       //patientName.forEach(logSetElements)
-       
-       [
-       patValues.next().value
-       ]
-       /*
-       [9937,	"",	"",	7749,	9816,	4355,	8279,	"",	""],
-        [2380,	"",	6977,	8896,	4012,	3803,	5408,	3415,	3056],
-        [9180,	"",	39,	9445,	3917,	"",	18,	5239,	2516],
+        
+        uniquePats.map((patItem) =>{ 
+    //console.log("pats",  JSON.stringify(patItem, 4));
+    return JSON.stringify(patItem, 4)
+  })
+        /*
         [1924,	8734,	1819,	1838,	2330,	7921,	9219,	"",	3537],
+        ["",	8665,	5875,	9732,	1926,	"",	9743,	8388,   ""],
+        [7040,	4861,	2988,	5584,	2344,	9749,	8872,	9177,	6246],
+        [6334,	1674,	2967,	"",	9353,	396,	6006,	8572 , ""],
+        [6359,	"",	2580,	5723,	9801,	554,	1044,	5266,	8532],
+        [7278,	6971,	2232,	5720,	5665,	7231,	1165,	"",	168],
       */
       ]
+       /*
+       [
+       uniquePats.map((item) =>{ 
+    //console.log("pats", item);
+    return item
+  })
+       ]
       
+      ]
+      */
   }
     
  }
+ 
  );
+ console.log("sheets var", sheets);
 
  var sheetColumns = columnNamesArray.map((item) =>{
     //console.log("sheet Facs ",item);
@@ -189,6 +232,7 @@ console.log(patValues.next().value)
 */
 //console.log("Data Columns: ", columnNames.size);
 //Build Tabulator
+
 var table = new Tabulator("#example-table", {
     height:"311px",
      downloadConfig:{
@@ -202,7 +246,7 @@ var table = new Tabulator("#example-table", {
    //  downloadRowRange:"selected",
     spreadsheet:true,
     spreadsheetRows:10,
-    spreadsheetColumns:1,
+    spreadsheetColumns:5,
     spreadsheetColumnDefinition:{title:data[1], field:data[1], width:200, editor:"input"},
     spreadsheetSheets:sheets,
     spreadsheetSheetTabs:true,
@@ -220,7 +264,7 @@ var table = new Tabulator("#example-table", {
     editorEmptyValue:undefined, //ensure empty values are set to undefined so they arent included in spreadsheet output data
 
 });
-
+table.addRow(Object.assign({}, defaults));
 
 
 
