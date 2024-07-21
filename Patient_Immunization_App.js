@@ -44,7 +44,8 @@ var tabulatorSampleData = [
     {id:10, name:"Margret Marmajuke", age:"16", gender:"female", height:5, col:"yellow", dob:"31/01/1999"},
 ];
 
-var object1 = [];
+const object1 = [];
+const object2 = [];
 
    // Your JSON data
     const jsonData = {
@@ -75,6 +76,37 @@ var object1 = [];
        
       ]
       };
+      const tabledata = [{
+  id: 1,
+  name: "Oli Bob",
+  age: "12",
+  col: "red",
+  dob: ""
+}, {
+  id: 2,
+  name: "Mary May",
+  age: "1",
+  col: "blue",
+  dob: "14/05/1982"
+}, {
+  id: 3,
+  name: "Christine Lobowski",
+  age: "42",
+  col: "green",
+  dob: "22/05/1982"
+}, {
+  id: 4,
+  name: "Brendon Philips",
+  age: "125",
+  col: "orange",
+  dob: "01/08/1980"
+}, {
+  id: 5,
+  name: "Margret Marmajuke",
+  age: "16",
+  col: "yellow",
+  dob: "31/01/1999"
+}, ];
     
      // console.log("sample Data",sampleData);
      console.log("tabulatorSampleData",tabulatorSampleData);
@@ -112,38 +144,49 @@ domo.get(query, {format: 'array-of-arrays'}),
 //Step 3. Do something with the data from the query result
 function handleResult(data){
  const map1 = new Map();
-
+ const parseData = JSON.parse(JSON.stringify(data));
+//console.log("parse Data ",parseData[0]);
  data.forEach(element => {
    arr.push(element.FacName);
-   object1.push(JSON.stringify(element.FacName));
-   map1.set('facility', element.FacName);
-   map1.set('patient', element.PatientName);
-   map1.set('dob', element.PatBirthDate);
+   //console.log("element",element);
+   object1.push({
+            facility: element.FacName, 
+            patient:  element.PatientName,
+            dob: element.PatBirthDate
+        });
+  object2.push(element);
+   map1.set('facility:', element.FacName);
+   map1.set('patient:', element.PatientName);
+   map1.set('dob:', element.PatBirthDate);
+  //console.log("dataElements:",element);
 });
+console.log("object1",object1);
+console.log("object2",object2[1]);
+//console.log("Keys",Object.keys(object1));
+//console.log("data", data.FacName);
 const map1DataPart = map1.data;
+/*Convert Onject to Array*/
+var result = Object.keys(object1).map((key) => [key, object1[key]]);
 
+
+/*Convert Set to Array*/
+const setArray = Array.from(map1);
+//console.log("setArray", setArray);
+//console.log("object1",object1);
+
+//console.log("map1",map1[0][0])
+/*
 const facilityValue = map1.get('facility','patient');
 console.log("facilityValue",facilityValue);
 
 for (let value of map1.values()) {
     console.log("Values",value);
 }
+*/
  var sheetValuesArray = data.map(o => new Object({facilitytitle: o.FacName, patientnametitle: o.PatientName, patientdobtitle: o.PatBirthDate}))
  //console.log("sheetValuesArray",sheetValuesArray);
  
- const jsonDataArray = data.map(d => (({
-  "status": "success",
-  "data": {
-    "facility": 1,
-    "patient": "John Doe",
-    "dob": "john.doe@example.com"
-  },
-  "message": "User retrieved successfully"
-})));
-    const dataPart = jsonDataArray.data;
-
-// Output the "data" part to the console
-console.log("dataPart",dataPart);
+ 
 
 
 
@@ -169,7 +212,7 @@ cosole.log(dataTable);
 */
 } 
 
-console.log("Objectvalues: ",Object.values(dataResult)[0][1].PharmacyLocation);
+//console.log("Objectvalues: ",Object.values(dataResult)[0][1].PharmacyLocation);
 /*
 for(var i in data)
     dataResult.push([i, data[i]]);
@@ -259,13 +302,36 @@ let unique = [...new Set(data.map(item => item.FacName))];
 let clientsMapped = data.map(client => ({pharmacyLocation:client.PharmacyLocation, patientName:client.PatientName}))
 let yourJson = JSON.stringify(clientsMapped)
 //console.log("yourJSON Type ",sheetValuesArray);
+const facilityValue = map1.get('facility');
+//console.log("facilityValue",map1);
+//console.log("tableData",map1[0]);
+
+for (let value of map1.values()) {
+    //console.log("Values",value);
+}
+
+
+const jsonDataArray = data.map(d => (([{
+  
+    "facility": d.FacName,
+    "patient": d.PatientName,
+    "dob": d.PatBirthDate
+  
+},])));
+//onsole.log("Data Testing ",data[0].PatientName);
+uniqueMapPatient = [...new Set(data.map(item => item.PatientName))];
+ // console.log("uniqueMapPatient ",uniqueMapPatient);  
+    const dataPart = jsonDataArray.data;
+
+// Output the "data" part to the console
+//console.log("jsonDataArray ",jsonDataArray[0][0].patient);
     
     return{
       title:facItem,
       key:facItem,
       rows:5,
       columns:2,
-      data:[]
+      data:[]//uniqueMapPatient //JSON.stringify(facilityValue)
         /*
         uniquePats.map((patItem) =>{ 
     //console.log("pats",  JSON.stringify(patItem, 4));
@@ -331,6 +397,29 @@ let yourJson = JSON.stringify(clientsMapped)
 //Build Tabulator
 
 var table = new Tabulator("#example-table", {
+    layout:"fitDataFill",
+    height:"311px",
+    columns:[
+    {title:"facility", field:"facility"},
+    {title:"patient", field:"patient", hozAlign:"right", sorter:"number"},
+    {title:"Gender", field:"gender"},
+    {title:"Rating", field:"rating", hozAlign:"center"},
+    {title:"Favourite Color", field:"col"},
+    {title:"Date Of Birth", field:"dob", hozAlign:"center", sorter:"date"},
+    {title:"Driver", field:"car", hozAlign:"center"},
+    ],
+    data:object1 //sampleData 
+    //index:"patient", //set the index field to the "age" field.
+     //spreadsheet:true,
+    //spreadsheetRows:10,
+    //spreadsheetColumns:5,
+    //spreadsheetColumnDefinition:{title:"First Column", field:data[1], width:200, editor:"input"},
+    //spreadsheetSheets:sheets,
+    //spreadsheetSheetTabs:true,
+});
+
+/*
+var table = new Tabulator("#example-table", {
     height:"311px",
      downloadConfig:{
         columnHeaders:true, //include column headers in downloaded table
@@ -357,12 +446,15 @@ var table = new Tabulator("#example-table", {
     ],
     
 
+    
+
+
     //editorEmptyValue:undefined, //ensure empty values are set to undefined so they arent included in spreadsheet output data
 
 });
+*/
 //console.log("data string ",JSON.stringify(data));
-$("#example-table").tabulator("setData", tabulatorSampleData);
-
+//$("#example-table").tabulator("setData", tabulatorSampleData);
 
 //trigger download of data.xlsx file
 
