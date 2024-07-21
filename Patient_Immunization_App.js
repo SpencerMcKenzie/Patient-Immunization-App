@@ -399,14 +399,12 @@ uniqueMapPatient = [...new Set(data.map(item => item.PatientName))];
 var table = new Tabulator("#example-table", {
     layout:"fitDataFill",
     height:"311px",
+    groupBy:"facility",
     columns:[
-    {title:"facility", field:"facility"},
-    {title:"patient", field:"patient", hozAlign:"right", sorter:"number"},
-    {title:"Gender", field:"gender"},
-    {title:"Rating", field:"rating", hozAlign:"center"},
-    {title:"Favourite Color", field:"col"},
-    {title:"Date Of Birth", field:"dob", hozAlign:"center", sorter:"date"},
-    {title:"Driver", field:"car", hozAlign:"center"},
+    {title:"Facility", field:"facility"},
+    {title:"Patient", field:"patient", hozAlign:"right", sorter:"number"},
+    {title:"Patient DOB", field:"dob"},
+    
     ],
     data:object1 //sampleData 
     //index:"patient", //set the index field to the "age" field.
