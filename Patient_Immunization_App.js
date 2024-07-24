@@ -24,6 +24,7 @@ var arr = [];
 var ac =[];
 var dom = document.getElementById("example-table");
 var facNamesDup = [];
+var table;
 
 var sampleData = [
         [1924,	8734,	1819,	1838,	2330,	7921,	9219,	"",	3537],
@@ -143,68 +144,68 @@ domo.get(query, {format: 'array-of-arrays'}),
 // domo.get(query2, {format: 'array-of-arrays'}).then(handleResult),
 
 //Step 3. Do something with the data from the query result
-function handleResult(data){
-// Assume `data` is your dataset with each entry containing a facility and patient information
+function handleResult(data) {
+  // Example logic to categorize data into sheets
+    let sheetGroups = {};
 
-// 1. Extract unique facilities
-let uniqueFacilities = [...new Set(data.map(item => item.FacName))];
+    // Assume each item in domoData has a 'category' field to differentiate sheets
+    data.forEach(item => {
+        
+        let category = item.FacName || 'Uncategorized';
+        if (!sheetGroups[category]) {
+            sheetGroups[category] = [];
+        }
+        sheetGroups[category].push(item);
+        console.log("sheet group cat",sheetGroups[category])
+    });
 
-// 2. Group patients by facility
-let facilityData = {};
-uniqueFacilities.forEach(facility => {
-  facilityData[facility] = data.filter(item => item.FacName === facility);
-});
+    // Create sheets from the grouped data
+    sheets = Object.keys(sheetGroups).map((category, index) => ({
+        title: category,
+        key: 'sheet' + index,
+        data: sheetGroups[category],
+    }));
 
-// 3. Create sheets for each facility
-let sheets = uniqueFacilities.map(facility => {
-  return {
-    title: facility,
-    key: facility,
-    rows: 5, // Adjust the number of rows as needed
-    columns: [
-      { title: "Patient Name", field: "PatientName" },
-      { title: "DOB", field: "PatBirthDate" },
-      // Add other relevant fields here
-    ],
-    data: facilityData[facility].map(patient => ({
-      "Patient Name": patient.PatientName,
-      "DOB": patient.PatBirthDate,
-      // Map other fields here
-    }))
-  };
-});
+    // Initialize the table with the first sheet's data
+    initializeTable(sheets[0].data);
 
-// Initialize Tabulator with the sheets
-var table = new Tabulator("#example-table", {
-  height: "311px",
-  layout: "fitColumns",
-  columns: [
-    { title: "Patient Name", field: "Patient Name" },
-    { title: "DOB", field: "DOB" },
-    // Define additional columns if needed
-  ],
-  data: facilityData[uniqueFacilities[0]].map(patient => ({
-    "Patient Name": patient.PatientName,
-    "DOB": patient.PatBirthDate,
-    // Map other fields here
-  })),
-  // Define other Tabulator options here
-  sheetOptions: {
-    spreadsheet: true,
-    sheets: sheets,
-    sheetTabs: true,
-    rowHeader: { field: "id", hozAlign: "center", headerSort: false, frozen: true },
-  }
-});
-
-// Handle download button click
-document.getElementById("download-xlsx").addEventListener("click", function(){
-  table.download("xlsx", "FacilityPatients.xlsx", {sheets: sheets});
-});
-
-
-
+    // Setup the tab navigation
+    setupTabs();
 }
+
+// Function to initialize Tabulator
+function initializeTable(data) {
+    table = new Tabulator("#example-table", {
+        height: "311px",
+        layout: "fitDataFill",
+        columns: [
+            { title: "Patient", field: "PatientName" },
+            { title: "Patient DOB", field: "PatBirthDate" },
+            
+            // Define other columns based on your data
+        ],
+        data: data,
+    });
+}
+
+// Function to setup tabs
+function setupTabs() {
+    var tabList = document.getElementById('tab-list');
+    tabList.innerHTML = ''; // Clear previous tabs
+
+    sheets.forEach((sheet, index) => {
+        var tabButton = document.createElement('button');
+        tabButton.innerHTML = sheet.title;
+        tabButton.addEventListener('click', () => {
+            table.setData(sheet.data);
+        });
+        tabList.appendChild(tabButton);
+    });
+}
+
+// Fetch the data and call handleResult
+//domo.get(query2).then(handleResult);
+
 
 
 /*ORIGINAL DOMO CODE */
