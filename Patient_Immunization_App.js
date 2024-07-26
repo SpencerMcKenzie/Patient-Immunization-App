@@ -25,6 +25,7 @@ var ac =[];
 var dom = document.getElementById("example-table");
 var facNamesDup = [];
 var table;
+var FacTitles =[];
 
 var sampleData = [
         [1924,	8734,	1819,	1838,	2330,	7921,	9219,	"",	3537],
@@ -156,7 +157,6 @@ function handleResult(data) {
             sheetGroups[category] = [];
         }
         sheetGroups[category].push(item);
-        console.log("sheet group cat",sheetGroups[category])
     });
 
     // Create sheets from the grouped data
@@ -178,6 +178,7 @@ function initializeTable(data) {
     table = new Tabulator("#example-table", {
         height: "311px",
         layout: "fitDataFill",
+        spreadsheetOutputFull: true,
         columns: [
             { title: "Patient", field: "PatientName" },
             { title: "Patient DOB", field: "PatBirthDate" },
@@ -194,6 +195,7 @@ function setupTabs() {
     tabList.innerHTML = ''; // Clear previous tabs
 
     sheets.forEach((sheet, index) => {
+        FacTitles.push(sheet.title);
         var tabButton = document.createElement('button');
         tabButton.innerHTML = sheet.title;
         tabButton.addEventListener('click', () => {
@@ -201,8 +203,52 @@ function setupTabs() {
         });
         tabList.appendChild(tabButton);
     });
+    document.getElementById("download-xlsx").addEventListener("click", function() {
+    // Prepare the sheets data in the required format
+    var sheetData = sheets.map(sheet => ({
+        
+        name: sheet.title,
+         // Sheet name
+        data: sheet.data // Data for the sheet
+        
+    }));
+    
+  
+  
+}); 
+ 
 }
+  document.getElementById("download-xlsx").addEventListener("click", function() {
+        // Prepare the workbook
+        var wb = XLSX.utils.book_new();
 
+        // Add each sheet to the workbook
+        sheets.forEach(sheet => {
+            var ws = XLSX.utils.json_to_sheet(sheet.data);
+            XLSX.utils.book_append_sheet(wb, ws, sheet.title);
+        });
+
+        // Export the workbook
+        XLSX.writeFile(wb, "MultipleSheets.xlsx");
+    });
+
+
+
+
+
+/*
+console.log("FacTitles",FacTitles);
+document.getElementById("download-xlsx").addEventListener("click", function(){
+    table.download("xlsx", "data.xlsx", {sheetName:sheets.FacTitles});
+});
+*/
+//console.log("table: ",table);
+/*
+document.getElementById("download-xlsx").addEventListener("click", function(){
+    // table.download("xlsx", "data.xlsx", {sheetName:"My Data"});
+    table.download("xlsx", "data.xlsx", {sheets:sheets.title}); //download a Xlsx file that has a tab for each table
+});
+*/
 // Fetch the data and call handleResult
 //domo.get(query2).then(handleResult);
 
