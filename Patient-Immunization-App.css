@@ -1,0 +1,57 @@
+/* Basic reset for margin and padding */
+body, ul, li {
+  margin: 0;
+  padding: 0;
+}
+
+/* Container for tabs and contents */
+#tabs {
+  width: 100%;
+}
+
+/* Styling the tab list */
+#tab-list {
+  list-style-type: none;
+  display: flex;
+  border-bottom: 1px solid #ccc;
+}
+
+#tab-list li {
+  margin: 0;
+}
+
+#tab-list a {
+  display: block;
+  padding: 10px 20px;
+  text-decoration: none;
+  color: #333;
+  background-color: #f1f1f1;
+  border: 1px solid #ccc;
+  border-bottom: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#tab-list a:hover {
+  background-color: #e1e1e1;
+}
+
+#tab-list a.active {
+  background-color: #fff;
+  border-bottom: 1px solid #fff;
+  position: relative;
+  top: 1px;
+}
+
+/* Container for tab contents */
+#tab-contents .tab-content {
+  display: none;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+/* Show the first tab content by default */
+#tab-contents .tab-content.active {
+  display: block;
+}
