@@ -124,10 +124,10 @@ const object2 = [];
 //console.log("Before GET");
 //Step 2. Query your dataset(s): https://developer.domo.com/docs/dev-studio-references/data-api
 // Form the data queries: https://developer.domo.com/docs/dev-studio-guides/data-queries
-var fields = ['PharmacyLocation','FacName','PharmID','PatientName','PatBirthDate'];
-var query2Fields = ['PharmacyLocation','FacName','ActivePatientCount'];
-var query2GroupBy = ['PharmacyLocation','FacName','ActivePatientCount'];
-var groupby = ['PharmacyLocation','FacName','PharmID','PatientName','PatBirthDate'];
+var fields = ['FacName','PharmID','PatientName','PatBirthDate','LotNumber','Vaccinator','WhichArm?','PaperWork'];
+var query2Fields = ['FacName','PharmID','PatientName','PatBirthDate','LotNumber','Vaccinator','WhichArm?','PaperWork'];
+var query2GroupBy = ['FacName','PharmID','PatientName','PatBirthDate','LotNumber','Vaccinator','WhichArm?','PaperWork'];
+var groupby = ['FacName','PharmID','PatientName','PatBirthDate','LotNumber','Vaccinator','WhichArm?','PaperWork'];;
 // var query = `/data/v1/${datasets[0]}?fields=${fields.join()}&groupby=${groupby.join()}`;
 var query2 = `data/v1/${datasets[1]}`;
 //var query2 = `/data/v1/${datasets[1]}?fields=${query2Fields.join()}&groupby=${query2GroupBy.join()}`;
@@ -160,11 +160,21 @@ function handleResult(data) {
     });
 
     // Create sheets from the grouped data
-    sheets = Object.keys(sheetGroups).map((category, index) => ({
-        title: category,
-        key: 'sheet' + index,
-        data: sheetGroups[category],
-    }));
+    // Create sheets from grouped data and sort by PatientName
+  sheets = Object.keys(sheetGroups).map((category, index) => {
+    const sortedData = sheetGroups[category].sort((a, b) => {
+      if (a.PatientName && b.PatientName) {
+        return a.PatientName.localeCompare(b.PatientName);
+      }
+      return 0;
+    });
+
+    return {
+      title: category,
+      key: 'sheet' + index,
+      data: sortedData,
+    };
+  });
 
     // Initialize the table with the first sheet's data
     initializeTable(sheets[0].data);
@@ -182,6 +192,10 @@ function initializeTable(data) {
         columns: [
             { title: "Patient", field: "PatientName" },
             { title: "Patient DOB", field: "PatBirthDate" },
+            { title: "Lot Number", field: "LotNumber" },
+            { title: "Which Arm?", field: "WhichArm?" },
+            { title: "Vaccinator", field: "Vaccinator" },
+            { title: "Paperwork", field: "PaperWork" },
             
             // Define other columns based on your data
         ],
@@ -221,12 +235,25 @@ function setupTabs() {
   document.getElementById("download-xlsx").addEventListener("click", function() {
         // Prepare the workbook
         var wb = XLSX.utils.book_new();
-
-        // Add each sheet to the workbook
-        sheets.forEach(sheet => {
-            var ws = XLSX.utils.json_to_sheet(sheet.data);
-            XLSX.utils.book_append_sheet(wb, ws, sheet.title);
+ // Function to remove specific fields from each data entry
+    function removeFields(data, fieldsToRemove) {
+        return data.map(item => {
+            let filteredItem = { ...item }; // Clone item to avoid mutating original data
+            fieldsToRemove.forEach(field => delete filteredItem[field]);
+            return filteredItem;
         });
+    }
+
+    // Define the fields you want to exclude
+    const fieldsToExclude = ['PharmacyLocation'];
+
+    // Add each sheet to the workbook
+    sheets.forEach(sheet => {
+        // Remove unwanted fields from sheet data
+        var filteredData = removeFields(sheet.data, fieldsToExclude);
+        var ws = XLSX.utils.json_to_sheet(filteredData);
+        XLSX.utils.book_append_sheet(wb, ws, sheet.title);
+    });
 
         // Export the workbook
         XLSX.writeFile(wb, "MultipleSheets.xlsx");
