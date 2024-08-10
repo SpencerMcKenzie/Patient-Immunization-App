@@ -189,7 +189,7 @@ function initializeTable(data) {
         columns: [
             { title: "Patient", field: "PatientName" },
             { title: "Patient DOB", field: "PatBirthDate" },
-            { title: "Patient Age", field: "Patient Age" },
+           { title: "Patient Age", field: "Age" },
             { title: "Lot Number", field: "LotNumber" },
             { title: "Which Arm?", field: "WhichArm?" },
             { title: "Vaccinator", field: "Vaccinator" },
