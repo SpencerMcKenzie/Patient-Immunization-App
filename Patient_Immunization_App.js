@@ -127,7 +127,7 @@ const object2 = [];
 var fields = ['FacName','PharmID','PatientName','PatBirthDate','LotNumber','Vaccinator','WhichArm?','PaperWork'];
 var query2Fields = ['FacName','PharmID','PatientName','PatBirthDate','LotNumber','Vaccinator','WhichArm?','PaperWork'];
 var query2GroupBy = ['FacName','PharmID','PatientName','PatBirthDate','LotNumber','Vaccinator','WhichArm?','PaperWork'];
-var groupby = ['FacName','PharmID','PatientName','PatBirthDate','LotNumber','Vaccinator','WhichArm?','PaperWork'];;
+var groupby = ['FacName','PharmID','PatientName','PatBirthDate','LotNumber','Vaccinator','WhichArm?','PaperWork'];
 // var query = `/data/v1/${datasets[0]}?fields=${fields.join()}&groupby=${groupby.join()}`;
 var query2 = `data/v1/${datasets[1]}`;
 //var query2 = `/data/v1/${datasets[1]}?fields=${query2Fields.join()}&groupby=${query2GroupBy.join()}`;
@@ -182,6 +182,10 @@ function handleResult(data) {
     // Setup the tab navigation
     setupTabs();
 }
+// Create Excel Formula // 
+function ageIfFormula(rowNumber) {
+  return `=DATEDIF(C${rowNumber},TODAY(),"y")`;
+}
 
 // Function to initialize Tabulator
 function initializeTable(data) {
@@ -192,6 +196,7 @@ function initializeTable(data) {
         columns: [
             { title: "Patient", field: "PatientName" },
             { title: "Patient DOB", field: "PatBirthDate" },
+           // { title: "Patient Age", field: "Patient Age" },
             { title: "Lot Number", field: "LotNumber" },
             { title: "Which Arm?", field: "WhichArm?" },
             { title: "Vaccinator", field: "Vaccinator" },
@@ -244,13 +249,28 @@ function setupTabs() {
         });
     }
 
+     const columnsToInclude = ['PatientName', 'PatBirthDate', 'LotNumber', 'Vaccinator', 'WhichArm?', 'PaperWork'];
+
+    // Function to filter data and include only specified fields
+    function filterFields(data, fieldsToInclude) {
+        return data.map(item => {
+            let filteredItem = {}; // Create a new object for the filtered data
+            fieldsToInclude.forEach(field => {
+                if (item.hasOwnProperty(field)) {
+                    filteredItem[field] = item[field]; // Add only the specified fields to the new object
+                }
+            });
+            return filteredItem;
+        });
+    }
+
     // Define the fields you want to exclude
     const fieldsToExclude = ['PharmacyLocation'];
 
     // Add each sheet to the workbook
-    sheets.forEach(sheet => {
-        // Remove unwanted fields from sheet data
-        var filteredData = removeFields(sheet.data, fieldsToExclude);
+   sheets.forEach(sheet => {
+        // Filter the data to include only the specified columns
+        var filteredData = filterFields(sheet.data, columnsToInclude);
         var ws = XLSX.utils.json_to_sheet(filteredData);
         XLSX.utils.book_append_sheet(wb, ws, sheet.title);
     });
