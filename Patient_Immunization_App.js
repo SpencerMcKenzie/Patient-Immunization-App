@@ -262,6 +262,15 @@ document.getElementById("download-xlsx").addEventListener("click", function() {
         filteredData.sort((a, b) => a.Row - b.Row);
 
         var ws = XLSX.utils.json_to_sheet(filteredData);
+        // Set column widths based on content length
+        const colWidths = columnsToInclude.map(field => {
+            const maxLength = Math.max(
+                ...filteredData.map(item => item[field] ? item[field].toString().length : 10)
+            );
+            return { wch: maxLength + 2 }; // Adding extra space for padding
+        });
+
+        ws['!cols'] = colWidths;
         XLSX.utils.book_append_sheet(wb, ws, sheet.title);
     });
 
@@ -272,48 +281,3 @@ document.getElementById("download-xlsx").addEventListener("click", function() {
 
 
 
-/*
-console.log("FacTitles",FacTitles);
-document.getElementById("download-xlsx").addEventListener("click", function(){
-    table.download("xlsx", "data.xlsx", {sheetName:sheets.FacTitles});
-});
-*/
-//console.log("table: ",table);
-/*
-document.getElementById("download-xlsx").addEventListener("click", function(){
-    // table.download("xlsx", "data.xlsx", {sheetName:"My Data"});
-    table.download("xlsx", "data.xlsx", {sheets:sheets.title}); //download a Xlsx file that has a tab for each table
-});
-*/
-// Fetch the data and call handleResult
-//domo.get(query2).then(handleResult);
-
-
-
-/*ORIGINAL DOMO CODE */
-
-/*
-function handleResult(data){
-
-//console.log("handleResult data: ",data);
-
-// let result = data.map(a => a.PatientName);
-  let result = data.map(o => { return {PharmacyLocation: o.Column1, FacName: o.FacName ,PatientName: o.PatientName,PatBirthDate: o.PatBirthDate} })
-  console.log("result: ",result);
-
-  var table = new Tabulator("#example-table", {
-   data:result,
-   //renderHorizontal:"virtual",
-   autoColumns:true,
-   height:"311px",
-   layout:"fitColumns",
-   //layout:"fitDataTable",
-   //layout:"fitDataStretch",
-   columns:[
-       {title:"Default Pharmacy Location", field:0}, //column has a fixed width of 100px;
-       {title:"Patient Name", field:"1"},//column will be allocated 1/5 of the remaining space
-       {title:"BirthDate", field:"2"}, //column will be allocated 3/5 of the remaining space
-       {title:"FacName", field:"3"} // column has a default widthGrow of 1 and will be allocated 1/5 of the remaining space
-    ],
-    });
-    */ 
